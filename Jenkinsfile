@@ -10,6 +10,8 @@ pipeline {
   stages {
     stage('Maven Install') {
       steps {
+        sh 'mvn spring-javaformat:apply'
+        sh 'mvn io.spring.javaformat:spring-javaformat-maven-plugin:0.0.20:apply'
         sh 'whoami && java -version && mvn -v'
         sh 'mvn -B -DskipTests clean package'
       }
@@ -17,7 +19,7 @@ pipeline {
     stage('Docker Build') {
       steps {
         sh 'docker --version'
-        sh 'docker build -t petclinic:latest .'
+        sh 'docker build -t grupo01/spring-petclinic:latest .'
       }
     }
   }
