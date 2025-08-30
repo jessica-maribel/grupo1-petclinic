@@ -1,26 +1,27 @@
-#!groovy
 pipeline {
-  agent {
-    docker {
-      image 'maven:3.9.6-eclipse-temurin-17'  // imagen moderna
-      args  '-u root:root -v /var/run/docker.sock:/var/run/docker.sock -v /var/jenkins_home:/var/jenkins_home'
+    agent none
+    stages {
+        stage('Maven Install') {
+            agent {
+                docker {
+                    image 'maven:3.9.6-eclipse-temurin-17'
+                    args '-v /root/.m2:/root/.m2'  // cache Maven
+                }
+            }
+            steps {
+                sh 'mvn spring-javaformat:apply'
+                sh 'mvn io.spring.javaformat:spring-javaformat-maven-plugin:0.0.20:apply
+                sh './mvnw spring-javaformat:apply'   // solo una vez
+                sh './mvnw clean install -B -DskipTests'
+            }
+        }
+        stage('Docker Build') {
+            agent any // usa nodo con Docker instalado
+            steps {
+                sh 'docker --version'
+                sh 'docker build -t grupo01/spring-petclinic:latest .'
+            }
+        }
     }
-  }
-  options { skipDefaultCheckout(false) }
-  stages {
-    stage('Maven Install') {
-      steps {
-        sh 'mvn spring-javaformat:apply'
-        sh 'mvn io.spring.javaformat:spring-javaformat-maven-plugin:0.0.20:apply'
-        sh 'whoami && java -version && mvn -v'
-        sh 'mvn -B -DskipTests clean package'
-      }
-    }
-    stage('Docker Build') {
-      steps {
-        sh 'docker --version'
-        sh 'docker build -t grupo01/spring-petclinic:latest .'
-      }
-    }
-  }
 }
+
