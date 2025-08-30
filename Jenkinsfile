@@ -10,7 +10,7 @@ pipeline {
             }
             steps {
                 sh 'mvn spring-javaformat:apply'
-                sh 'mvn io.spring.javaformat:spring-javaformat-maven-plugin:0.0.20:apply
+                sh 'mvn io.spring.javaformat:spring-javaformat-maven-plugin:0.0.20:apply'
                 sh './mvnw spring-javaformat:apply'   // solo una vez
                 sh './mvnw clean install -B -DskipTests'
             }
